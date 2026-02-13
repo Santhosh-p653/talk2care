@@ -1,4 +1,4 @@
-M python:3.10-slim
+FROM python:3.10-slim
 RUN apt-get update && apt-get install -y build-essential git wget ffmpeg && rm -rf /var/lib/apt/lists/*
 # Clone and compile whisper.cpp
 RUN git clone https://github.com/ggerganov/whisper.cpp.git /whisper
