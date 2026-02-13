@@ -1,4 +1,4 @@
-M python:3.10-slim
+FROM python:3.10-slim
 WORKDIR /app
 # Install system deps for Postgres
 RUN apt-get update && apt-get install -y libpq-dev gcc && rm -rf /var/lib/apt/lists/*
