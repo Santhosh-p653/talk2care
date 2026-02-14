@@ -1,12 +1,22 @@
 FROM python:3.10-slim
-RUN apt-get update && apt-get install -y build-essential git wget ffmpeg && rm -rf /var/lib/apt/lists/*
-# Clone and compile whisper.cpp
-RUN git clone https://github.com/ggerganov/whisper.cpp.git /whisper
-WORKDIR /whisper
-RUN make
-# Download the 'base' model automatically
-RUN bash ./models/download-ggml-model.sh base
-COPY . .
-# Keep it running or start a simple python wrapper
-CMD ["./main", "-m", "models/ggml-base.bin", "--port", "8000"]
 
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
+    wget \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+RUN git clone https://github.com/ggerganov/whisper.cpp.git
+WORKDIR /app/whisper.cpp
+RUN make
+RUN bash ./models/download-ggml-model.sh base
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+
+CMD ["python", "worker.py"]
