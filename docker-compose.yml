@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   db:
     image: postgres:15
@@ -11,10 +13,28 @@ services:
 
   backend:
     build: ./backend
+    restart: always
     depends_on:
       - db
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-      FLASK_ENV: ${FLASK_ENV}
+    env_file:
+      - .env
     ports:
       - "5000:5000"
+
+  ai_worker:
+    build: ./ai_worker
+    restart: always
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend
+    restart: always
+    depends_on:
+      - backend
+      - ai_worker
+    ports:
+      - "8501:8501"
+
+volumes:
+  postgres_data:
