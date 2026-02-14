@@ -5,16 +5,21 @@ RUN apt-get update && apt-get install -y \
     git \
     wget \
     ffmpeg \
+    cmake \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-RUN git clone https://github.com/ggerganov/whisper.cpp.git
+# Clone whisper.cpp explicitly
+RUN git clone https://github.com/ggerganov/whisper.cpp.git /app/whisper.cpp
+
 WORKDIR /app/whisper.cpp
 RUN make
+
+# Download base model
 RUN bash ./models/download-ggml-model.sh base
 
 WORKDIR /app
-COPY . .
+COPY worker.py ./
 
 CMD ["python", "worker.py"]
